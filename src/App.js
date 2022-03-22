@@ -8,8 +8,12 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: ""
+      data: "",
+      file: null
     }
+    this.fileChanged = this.fileChanged.bind(this);
+    this.buttonClicked = this.buttonClicked.bind(this);
+
   }
 
   componentDidMount() {
@@ -24,9 +28,18 @@ class App extends React.Component {
       });
   }
 
-  sendFile() {
-    console.log("Sending...");
-    fetch("/upload")
+  fileChanged(event) {
+    this.setState({ file: event.target.files[0] })
+  }
+
+  buttonClicked() {
+    const formData = new FormData();
+    formData.append("uploadedFile", this.state.file, this.state.file.name);
+
+    fetch("/upload", {
+      method: "POST",
+      body: formData
+    })
       .then((res) => res.json())
       .then((data) => {
         console.log("DATA: " + data.message);
@@ -41,13 +54,11 @@ class App extends React.Component {
     return (
       <div className="App" >
         <header className="App-header">
-          <form method="POST" action="/upload" encType="multipart/form-data" >
-            <label htmlFor="uploadedFile">Choose an audio file to upload</label>
-            <br />
-            <input type="file" name="uploadedFile" ></input>
-            <br />
-            <button type="submit" name="submit">Send file</button>
-          </form>
+          <label htmlFor="uploadedFile">Choose an audio file to upload</label>
+          <br />
+          <input type="file" name="uploadedFile" onChange={this.fileChanged}></input>
+          <br />
+          <button onClick={this.buttonClicked}>Send file</button>
           <p>{this.state.data}</p>
         </header>
       </div>
