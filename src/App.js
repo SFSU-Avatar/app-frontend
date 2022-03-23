@@ -9,7 +9,8 @@ class App extends React.Component {
     super();
     this.state = {
       data: "",
-      file: null
+      file: null,
+      recievedFile: null
     }
     this.fileChanged = this.fileChanged.bind(this);
     this.buttonClicked = this.buttonClicked.bind(this);
@@ -40,10 +41,18 @@ class App extends React.Component {
       method: "POST",
       body: formData
     })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("DATA: " + data.message);
-        return this.setState({ data: data.message })
+      .then((res) => res.blob())
+      .then((dataBlob) => {
+        console.log(dataBlob);
+        var reader = new FileReader();
+        reader.addEventListener("loadend", function () {
+          console.log(reader.result); // will print out file content
+        });
+        reader.readAsText(dataBlob);
+        const myFile = new File([dataBlob], `image`, {
+          type: dataBlob.type,
+        });
+        return this.setState({ recievedFile: dataBlob })
       })
       .catch((err) => {
         console.log(err);
