@@ -41,18 +41,20 @@ class App extends React.Component {
       method: "POST",
       body: formData
     })
-      .then((res) => res.blob())
+      .then((res) => res.json())
       .then((dataBlob) => {
-        console.log(dataBlob);
-        var reader = new FileReader();
-        reader.addEventListener("loadend", function () {
-          console.log(reader.result); // will print out file content
-        });
-        reader.readAsText(dataBlob);
-        const myFile = new File([dataBlob], `image`, {
+        // let myFile = constructFileFromLocalFileData(dataBlob);
+        // console.log(myFile);
+        // var reader = new FileReader();
+        // reader.addEventListener("loadend", function () {
+        //   console.log(reader.result); // will print out file content
+        // });
+        // reader.readAsText(dataBlob);
+        const myFile = new File(dataBlob.arrayBuffer, dataBlob.name, {
           type: dataBlob.type,
         });
-        return this.setState({ recievedFile: dataBlob })
+        console.log(myFile);
+        return this.setState({ recievedFile: myFile })
       })
       .catch((err) => {
         console.log(err);
