@@ -10,7 +10,7 @@ class App extends React.Component {
     this.state = {
       data: "",  //Message confirming conenction to backend
       file: null,  //Uploaded file
-      recievedFile: null  //File recieved from backend
+      recievedFiles: []  //File recieved from backend
     }
     this.fileChanged = this.fileChanged.bind(this);
     this.sendBtnClicked = this.sendBtnClicked.bind(this);
@@ -88,9 +88,18 @@ class App extends React.Component {
             var parts = currObj.split("$");
             let completeObj = parts[0];
             currObj = parts[1];
+
             // console.log("COMPLETE OBJ: " + completeObj);
-            var objFile = JSON.parse(completeObj);
-            console.log(objFile.name);
+            var jsonObj = JSON.parse(completeObj);
+            console.log("NAME: " + jsonObj.name)
+            var objFile = new File(jsonObj.arrayBuffer.data, jsonObj.name, {
+              type: jsonObj.type,
+            });
+            console.log(objFile);
+            var newArray = this.state.recievedFiles;
+            newArray.push(objFile);
+            this.setState({ recievedFiles: newArray });
+
           }
 
           read();
@@ -114,6 +123,7 @@ class App extends React.Component {
           <br />
           <button onClick={this.getBtnClicked}>Get files</button>
           <p>{this.state.data}</p>
+          <p>Number of files stored in state: {this.state.recievedFiles.length}</p>
         </header>
       </div>
     );
