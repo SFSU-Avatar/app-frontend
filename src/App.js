@@ -62,6 +62,7 @@ class App extends React.Component {
     fetch("/getFiles").then((res) => {
       //Create a reader for the body of the response
       const reader = res.body.getReader();
+      var currObj = "";
 
       const read = () => {
         // read the data
@@ -74,7 +75,24 @@ class App extends React.Component {
 
           //Decode the sent data
           const decoder = new TextDecoder();
-          console.log("[received]:" + decoder.decode(value));
+          var dataChunk = decoder.decode(value);
+          // console.log("[received]:" + dataChunk);
+
+          //Add the data chunk to the current object
+          currObj += dataChunk;
+
+          //If the file delimeter is found in the current data chunk
+          if (dataChunk.indexOf("$") != -1) {
+            //Split up the data chunk into the complete object
+            //and the start of the new object
+            var parts = currObj.split("$");
+            let completeObj = parts[0];
+            currObj = parts[1];
+            // console.log("COMPLETE OBJ: " + completeObj);
+            var objFile = JSON.parse(completeObj);
+            console.log(objFile.name);
+          }
+
           read();
         });
       };
