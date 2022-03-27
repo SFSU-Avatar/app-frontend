@@ -13,7 +13,8 @@ class App extends React.Component {
       recievedFile: null  //File recieved from backend
     }
     this.fileChanged = this.fileChanged.bind(this);
-    this.buttonClicked = this.buttonClicked.bind(this);
+    this.sendBtnClicked = this.sendBtnClicked.bind(this);
+    this.getBtnClicked = this.getBtnClicked.bind(this);
 
   }
 
@@ -36,7 +37,7 @@ class App extends React.Component {
   }
 
   //On 'upload' button clicked
-  buttonClicked() {
+  sendBtnClicked() {
     //Create a FormData object with and popluate with file data
     const formData = new FormData();
     formData.append("uploadedFile", this.state.file, this.state.file.name);
@@ -47,17 +48,31 @@ class App extends React.Component {
       body: formData
     })
       .then((res) => res.json())
-      .then((dataBlob) => {
-        const myFile = new File(dataBlob.arrayBuffer, dataBlob.name, {
-          type: dataBlob.type,
-        });
-        console.log(myFile);
-        return this.setState({ recievedFile: myFile })
+      .then((jsonRes) => {
+        console.log(jsonRes.message);
+        return this.setState({ data: jsonRes.message })
       })
       .catch((err) => {
         console.log(err);
       });
   }
+
+  getBtnClicked() {
+    //Make post request to backend to store the uploaded file
+    fetch("/getFiles")
+      .then((res) => res.json())
+      .then((dataBlob) => {
+        // const myFile = new File([dataBlob.arrayBuffer], dataBlob.name, {
+        //   type: dataBlob.type
+        // });
+        console.log(dataBlob);
+        return this.setState({ recievedFile: dataBlob })
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
 
   render() {
     return (
@@ -67,7 +82,9 @@ class App extends React.Component {
           <br />
           <input type="file" name="uploadedFile" onChange={this.fileChanged}></input>
           <br />
-          <button onClick={this.buttonClicked}>Send file</button>
+          <button onClick={this.sendBtnClicked}>Send file</button>
+          <br />
+          <button onClick={this.getBtnClicked}>Get files</button>
           <p>{this.state.data}</p>
         </header>
       </div>
