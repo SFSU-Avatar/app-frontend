@@ -58,19 +58,29 @@ class App extends React.Component {
   }
 
   getBtnClicked() {
-    //Make post request to backend to store the uploaded file
-    fetch("/getFiles")
-      .then((res) => res.json())
-      .then((dataBlob) => {
-        // const myFile = new File([dataBlob.arrayBuffer], dataBlob.name, {
-        //   type: dataBlob.type
-        // });
-        console.log(dataBlob);
-        return this.setState({ recievedFile: dataBlob })
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+
+    fetch("/getFiles").then((res) => {
+      //Create a reader for the body of the response
+      const reader = res.body.getReader();
+
+      const read = () => {
+        // read the data
+        reader.read().then(({ done, value }) => {
+          //done is set to true when the connection is closed
+          if (done) {
+            console.log("END OF DATA STREAM -- CONNECTION CLOSED");
+            return;
+          }
+
+          //Decode the sent data
+          const decoder = new TextDecoder();
+          console.log("[received]:" + decoder.decode(value));
+          read();
+        });
+      };
+
+      read();
+    });
   }
 
 
