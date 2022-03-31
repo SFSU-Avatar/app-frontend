@@ -101,16 +101,12 @@ class App extends React.Component {
             let completeObj = parts[0];
             currObj = parts[1];
 
-            console.log("COMPLETE OBJ: " + completeObj);
+            // console.log("COMPLETE OBJ: " + completeObj);
             var jsonObj = JSON.parse(completeObj);
             console.log("NAME: " + jsonObj.name)
-            var objFile = new File([jsonObj.arrayBuffer], jsonObj.name, {
-              type: jsonObj.type,
-            });
 
-            console.log(objFile);
             var newArray = this.state.recievedFiles;
-            newArray.push(objFile);
+            newArray.push(jsonObj.arrayBuffer);
             this.setState({ recievedFiles: newArray });
           }
 
@@ -123,7 +119,7 @@ class App extends React.Component {
   }
 
   display() {
-    if (this.state.recievedFiles.length <= 0) {
+    if (this.state.recievedFiles.length <= 1) {
       return <p>No File Recieved Yet</p>
     }
     //Uncomment to download files
@@ -144,18 +140,16 @@ class App extends React.Component {
     )
   }
 
-
-  // THREE.DefaultLoadingManager.addHandler(/\.dds$/i, new DDSLoader());
-
   Scene() {
-    const obj = useLoader(OBJLoader, "test.obj", (loader) => { });
+    //LOAD FROM A FILE NAME
+    // const obj = useLoader(OBJLoader, "test.obj", (loader) => { });
     console.log(
-      this.state.recievedFiles[0]
+      "Array Buffer: " + this.state.recievedFiles[0]
     );
-    // let loader = new OBJLoader();
-    // var myObj = loader.parse(this.state.recievedFiles[0]);
-    // console.log(obj);
-    return <primitive object={obj} scale={20} />;
+    let loader = new OBJLoader();
+    var myObj = loader.parse(this.state.recievedFiles[0]);
+    console.log("DONE LOADING");
+    return <primitive object={myObj} scale={20} />;
   };
 
   render() {
