@@ -101,17 +101,17 @@ class App extends React.Component {
             let completeObj = parts[0];
             currObj = parts[1];
 
-            // console.log("COMPLETE OBJ: " + completeObj);
+            console.log("COMPLETE OBJ: " + completeObj);
             var jsonObj = JSON.parse(completeObj);
             console.log("NAME: " + jsonObj.name)
-            var objFile = new File(jsonObj.arrayBuffer.data, jsonObj.name, {
+            var objFile = new File([jsonObj.arrayBuffer], jsonObj.name, {
               type: jsonObj.type,
             });
+
             console.log(objFile);
             var newArray = this.state.recievedFiles;
             newArray.push(objFile);
             this.setState({ recievedFiles: newArray });
-
           }
 
           read();
@@ -123,8 +123,19 @@ class App extends React.Component {
   }
 
   display() {
+    if (this.state.recievedFiles.length <= 0) {
+      return <p>No File Recieved Yet</p>
+    }
+    //Uncomment to download files
+    // var csvURL = window.URL.createObjectURL(this.state.recievedFiles[0]);
+    // var tempLink = document.createElement('a');
+    // tempLink.href = csvURL;
+    // tempLink.setAttribute('download', this.state.recievedFiles[0].name);
+    // tempLink.click();
+
     return (
       <Canvas>
+        <Stars />
         <OrbitControls />
         <ambientLight intensity={0.2} />
         <spotLight position={[10, 15, 10]} angle={0.3} />
@@ -137,16 +148,20 @@ class App extends React.Component {
   // THREE.DefaultLoadingManager.addHandler(/\.dds$/i, new DDSLoader());
 
   Scene() {
-    const obj = useLoader(OBJLoader, "test.obj", (loader) => {
-    });
-
-    console.log(obj);
+    const obj = useLoader(OBJLoader, "test.obj", (loader) => { });
+    console.log(
+      this.state.recievedFiles[0]
+    );
+    // let loader = new OBJLoader();
+    // var myObj = loader.parse(this.state.recievedFiles[0]);
+    // console.log(obj);
     return <primitive object={obj} scale={20} />;
   };
 
   render() {
     return (
       <div className="App" >
+
         <div className="window">
           {this.display()}
         </div>
