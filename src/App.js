@@ -6,6 +6,14 @@ import "./App.css";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import { useBox } from "@react-three/cannon";
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { useLoader } from '@react-three/fiber'
+
+import * as THREE from "three";
+import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
+import { DDSLoader } from "three-stdlib";
+import { Suspense } from "react";
+
 
 
 class App extends React.Component {
@@ -118,20 +126,30 @@ class App extends React.Component {
     return (
       <Canvas>
         <OrbitControls />
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={0.2} />
         <spotLight position={[10, 15, 10]} angle={0.3} />
-        <mesh>
-          <boxBufferGeometry attach="geometry" />
-          <meshLambertMaterial attach="material" color="red" />
-        </mesh>
+        {this.Scene()}
       </Canvas>
     )
   }
 
 
+  // THREE.DefaultLoadingManager.addHandler(/\.dds$/i, new DDSLoader());
+
+  Scene() {
+    const obj = useLoader(OBJLoader, "test.obj", (loader) => {
+    });
+
+    console.log(obj);
+    return <primitive object={obj} scale={20} />;
+  };
+
   render() {
     return (
       <div className="App" >
+        <div className="window">
+          {this.display()}
+        </div>
         <header className="App-header">
           <label htmlFor="uploadedFile">Choose an audio file to upload</label>
           <br />
@@ -142,9 +160,6 @@ class App extends React.Component {
           <button onClick={this.getBtnClicked}>Get files</button>
           <p>{this.state.data}</p>
           <p>Number of files stored in state: {this.state.recievedFiles.length}</p>
-          <div>
-            {this.display()}
-          </div>
         </header>
       </div>
     );
