@@ -3,6 +3,10 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Stars } from "@react-three/drei";
+import { useBox } from "@react-three/cannon";
+
 
 class App extends React.Component {
   constructor() {
@@ -110,6 +114,20 @@ class App extends React.Component {
     });
   }
 
+  display() {
+    return (
+      <Canvas>
+        <OrbitControls />
+        <ambientLight intensity={0.5} />
+        <spotLight position={[10, 15, 10]} angle={0.3} />
+        <mesh>
+          <boxBufferGeometry attach="geometry" />
+          <meshLambertMaterial attach="material" color="red" />
+        </mesh>
+      </Canvas>
+    )
+  }
+
 
   render() {
     return (
@@ -124,6 +142,9 @@ class App extends React.Component {
           <button onClick={this.getBtnClicked}>Get files</button>
           <p>{this.state.data}</p>
           <p>Number of files stored in state: {this.state.recievedFiles.length}</p>
+          <div>
+            {this.display()}
+          </div>
         </header>
       </div>
     );

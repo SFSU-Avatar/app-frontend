@@ -4,12 +4,16 @@
   "private": true,
   "proxy": "http://35.227.182.125:5000",
   "dependencies": {
+    "@react-three/cannon": "^5.1.0",
+    "@react-three/drei": "^9.0.1",
+    "@react-three/fiber": "^8.0.4",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-scripts": "^2.1.3",
+    "three": "^0.139.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
