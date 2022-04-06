@@ -22,12 +22,13 @@ class App extends React.Component {
     this.state = {
       data: "",  //Message confirming conenction to backend
       file: null,  //Uploaded file
-      recievedFiles: []  //File recieved from backend
+      recievedFiles: [],  //File recieved from backend
+      frameNum: 0
     }
     this.fileChanged = this.fileChanged.bind(this);
     this.sendBtnClicked = this.sendBtnClicked.bind(this);
     this.getBtnClicked = this.getBtnClicked.bind(this);
-
+    this.switchFrameClick = this.switchFrameClick.bind(this);
   }
 
   //Display message confirming connection to backend
@@ -143,14 +144,18 @@ class App extends React.Component {
   Scene() {
     //LOAD FROM A FILE NAME
     // const obj = useLoader(OBJLoader, "test.obj", (loader) => { });
-    console.log(
-      "Array Buffer: " + this.state.recievedFiles[0]
-    );
+    // console.log(
+    //   "Array Buffer: " + this.state.recievedFiles[0]
+    // );
     let loader = new OBJLoader();
-    var myObj = loader.parse(this.state.recievedFiles[0]);
+    var myObj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
     console.log("DONE LOADING");
     return <primitive object={myObj} scale={20} />;
   };
+
+  switchFrameClick() {
+    this.setState((frameNum) => { return { frameNum: frameNum + 1 } });
+  }
 
   render() {
     return (
@@ -159,6 +164,7 @@ class App extends React.Component {
         <div className="window">
           {this.display()}
         </div>
+        <button onClick={this.switchFrameClick}>Switch Frame</button>
         <header className="App-header">
           <label htmlFor="uploadedFile">Choose an audio file to upload</label>
           <br />
