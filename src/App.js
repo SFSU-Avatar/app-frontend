@@ -30,6 +30,7 @@ class App extends React.Component {
     this.sendBtnClicked = this.sendBtnClicked.bind(this);
     this.getBtnClicked = this.getBtnClicked.bind(this);
     this.switchFrameClick = this.switchFrameClick.bind(this);
+    this.playVid = this.playVid.bind(this);
   }
 
   //Display message confirming connection to backend
@@ -154,10 +155,14 @@ class App extends React.Component {
   };
 
   switchFrameClick() {
-    // for (var i = 0; i < this.state.frameNum; i++) {
-    //   this.doStuff();
-    // }
+    this.setState((prevState, props) => ({
+      frameNum: prevState.frameNum + 1
+    }));
 
+  }
+
+  playVid() {
+    this.setState({ frameNum: 0 });
     this.state.audio.play()
       .then(() => {
         var intervalID = window.setInterval(() => {
@@ -171,7 +176,6 @@ class App extends React.Component {
         }, 18);
       }
       )
-
   }
 
   render() {
@@ -182,6 +186,7 @@ class App extends React.Component {
           {this.display()}
         </div>
         <button onClick={this.switchFrameClick}>Switch Frame</button>
+        <button onClick={this.playVid}>Play!</button>
         <header className="App-header">
           <label htmlFor="uploadedFile">Choose an audio file to upload</label>
           <br />
