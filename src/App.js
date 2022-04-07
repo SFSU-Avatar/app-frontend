@@ -23,7 +23,8 @@ class App extends React.Component {
       data: "",  //Message confirming conenction to backend
       file: null,  //Uploaded file
       recievedFiles: [],  //File recieved from backend
-      frameNum: 0
+      frameNum: 0,
+      audio: new Audio('tts.mp3')
     }
     this.fileChanged = this.fileChanged.bind(this);
     this.sendBtnClicked = this.sendBtnClicked.bind(this);
@@ -153,9 +154,24 @@ class App extends React.Component {
   };
 
   switchFrameClick() {
-    this.setState((prevState, props) => ({
-      frameNum: prevState.frameNum + 1
-    }));
+    // for (var i = 0; i < this.state.frameNum; i++) {
+    //   this.doStuff();
+    // }
+
+    this.state.audio.play()
+      .then(() => {
+        var intervalID = window.setInterval(() => {
+          if (this.state.frameNum == this.state.recievedFiles.length - 1) {
+            this.setState({ frameNum: 0 });
+            clearInterval(intervalID);
+          }
+          this.setState((prevState, props) => ({
+            frameNum: prevState.frameNum + 1
+          }));
+        }, 18);
+      }
+      )
+
   }
 
   render() {
