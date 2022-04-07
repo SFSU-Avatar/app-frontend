@@ -120,7 +120,7 @@ class App extends React.Component {
   }
 
   display() {
-    if (this.state.recievedFiles.length <= 1) {
+    if (this.state.recievedFiles.length <= 0) {
       return <p>No File Recieved Yet</p>
     }
     //Uncomment to download files
@@ -149,12 +149,13 @@ class App extends React.Component {
     // );
     let loader = new OBJLoader();
     var myObj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
-    console.log("DONE LOADING");
     return <primitive object={myObj} scale={20} />;
   };
 
   switchFrameClick() {
-    this.setState((frameNum) => { return { frameNum: frameNum + 1 } });
+    this.setState((prevState, props) => ({
+      frameNum: prevState.frameNum + 1
+    }));
   }
 
   render() {
