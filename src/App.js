@@ -8,11 +8,17 @@ import { OrbitControls, Stars } from "@react-three/drei";
 import { useBox } from "@react-three/cannon";
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { useLoader } from '@react-three/fiber'
+import { Mesh } from "three";
 
 import * as THREE from "three";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import { DDSLoader } from "three-stdlib";
 import { Suspense } from "react";
+import { Texture } from "three";
+import { BufferGeometry } from "three";
+import { TextureLoader } from "three";
+import { MaterialLoader } from "three";
+import { Material } from "three";
 
 
 
@@ -70,6 +76,52 @@ class App extends React.Component {
       .catch((err) => {
         console.log(err);
       });
+
+    fetch("/getFiles").then((res) => {
+      //Create a reader for the body of the response
+      const reader = res.body.getReader();
+      var currObj = "";
+
+      const read = () => {
+        // read the data
+        reader.read().then(({ done, value }) => {
+          //done is set to true when the connection is closed
+          if (done) {
+            console.log("END OF DATA STREAM -- CONNECTION CLOSED");
+            return;
+          }
+
+          //Decode the sent data
+          const decoder = new TextDecoder();
+          var dataChunk = decoder.decode(value);
+          // console.log("[received]:" + dataChunk);
+
+          //Add the data chunk to the current object
+          currObj += dataChunk;
+
+          //If the file delimeter is found in the current data chunk
+          if (dataChunk.indexOf("$") != -1) {
+            //Split up the data chunk into the complete object
+            //and the start of the new object
+            var parts = currObj.split("$");
+            let completeObj = parts[0];
+            currObj = parts[1];
+
+            // console.log("COMPLETE OBJ: " + completeObj);
+            var jsonObj = JSON.parse(completeObj);
+            console.log("NAME: " + jsonObj.name)
+
+            var newArray = this.state.recievedFiles;
+            newArray.push(jsonObj.arrayBuffer);
+            this.setState({ recievedFiles: newArray });
+          }
+
+          read();
+        });
+      };
+
+      read();
+    });
   }
 
   getBtnClicked() {
@@ -136,7 +188,7 @@ class App extends React.Component {
       <Canvas>
         <Stars />
         <OrbitControls />
-        <ambientLight intensity={0.2} />
+        <ambientLight intensity={0.5} />
         <spotLight position={[10, 15, 10]} angle={0.3} />
         {this.Scene()}
       </Canvas>
@@ -145,13 +197,69 @@ class App extends React.Component {
 
   Scene() {
     //LOAD FROM A FILE NAME
-    // const obj = useLoader(OBJLoader, "test.obj", (loader) => { });
-    // console.log(
-    //   "Array Buffer: " + this.state.recievedFiles[0]
+    // const obj = useLoader(OBJLoader, "test.obj", (loader) => { 
+    //   Material
+    // });
+
+    // var mtlLoader = new MTLLoader();
+    // mtlLoader.load("/texture_mesh.mtl", (newMats) => {
+    //   const obj = useLoader(OBJLoader, "test.obj", (loader) => {
+
+    //   });
+
+    //   obj.children[0].material = new THREE.MeshNormalMaterial({
+    //     map: materials
+    //   });
+    //   console.log(obj.children[0].geometry);
+
+    //   return (
+    //     <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
+    //     </mesh>
+    //   );
+    // });
+
+    /////////////////////////////////////////
+
+    // let texLoader = new TextureLoader();
+    // let myTex = texLoader.load("/texture_mesh.png");
+
+    // obj.children[0].material = new THREE.MeshNormalMaterial({
+    //   map: myMtl
+    // });
+    // console.log(obj.children[0].geometry);
+
+    // return (
+    //   <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
+    //   </mesh>
     // );
-    let loader = new OBJLoader();
-    var myObj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
-    return <primitive object={myObj} scale={20} />;
+    var mtlLoader = new MTLLoader();
+    mtlLoader.load("/texture_mesh.mtl", (newMats) => {
+      // const obj = useLoader(OBJLoader, "/rock.obj");
+      let loader = new OBJLoader();
+      loader.setMaterials(newMats);
+      var obj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
+      // const texture = new Texture("/texture_mesh.mtl");
+      // let matLoader = new MaterialLoader();
+      // let myMat = matLoader.load("/texture_mesh.mtl");
+
+      // obj.children[0].material = new THREE.MeshPhongMaterial({
+      //   color: 'white'
+      // });
+      console.log(obj.children[0].material);
+      obj.children[0].material = new THREE.MeshPhongMaterial({
+        color: 'white'
+      });
+
+      return (
+        <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
+        </mesh>
+      );
+    });
+
+    //MY IMPLEMENTATION
+    // let loader = new OBJLoader();
+    // var myObj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
+    // return <primitive object={myObj} scale={20} />;
   };
 
   switchFrameClick() {
@@ -194,7 +302,7 @@ class App extends React.Component {
           <br />
           <button onClick={this.sendBtnClicked}>Send file</button>
           <br />
-          <button onClick={this.getBtnClicked}>Get files</button>
+          {/* <button onClick={this.getBtnClicked}>Get files</button> */}
           <p>{this.state.data}</p>
           <p>Number of files stored in state: {this.state.recievedFiles.length}</p>
         </header>
