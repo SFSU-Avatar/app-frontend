@@ -5,7 +5,7 @@ import "./App.css";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 // import { useBox } from "@react-three/cannon";
-// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { useLoader } from '@react-three/fiber'
 // import { Mesh } from "three";
 
@@ -152,21 +152,21 @@ class App extends React.Component {
     // });
 
     //********** USING PRIMITIVES
-    // let loader = new OBJLoader();
-    // var myObj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
-    // return <primitive object={myObj} scale={20} />;
+    let loader = new OBJLoader();
+    var myObj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
+    return <primitive object={myObj} scale={20} />;
 
     //********** USING MESHES
-    let loader = new OBJLoader();
-    var obj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
+    // let loader = new OBJLoader();
+    // var obj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
 
-    //Set material
-    // obj.children[0].material = new THREE.MeshPhongMaterial({});
+    // //Set material
+    // // obj.children[0].material = new THREE.MeshPhongMaterial({});
 
-    return (
-      <mesh geometry={obj.children[0].geometry} /*material={obj.children[0].material}*/ scale={20}>
-      </mesh>
-    );
+    // return (
+    //   <mesh geometry={obj.children[0].geometry} /*material={obj.children[0].material}*/ scale={20}>
+    //   </mesh>
+    // );
 
   };
 
