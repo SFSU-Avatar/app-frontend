@@ -31,10 +31,12 @@ class App extends React.Component {
       recievedFiles: [],  //File recieved from backend
       frameNum: 0,
       audio: new Audio('sample.wav'),
-      checked: false
+      checked: false,
+      userText: ""
     }
 
     this.fileChanged = this.fileChanged.bind(this);
+    this.textChanged = this.textChanged.bind(this);
     this.sendBtnClicked = this.sendBtnClicked.bind(this);
     this.switchFrameClick = this.switchFrameClick.bind(this);
     this.playVid = this.playVid.bind(this);
@@ -61,28 +63,42 @@ class App extends React.Component {
 
   //On new upload file is selected
   fileChanged(event) {
-    this.setState({ file: event.target.files[0] })
+    this.setState({ file: event.target.files[0] });
+  }
+
+  //On text field content changed
+  textChanged(event) {
+    this.setState({ userText: event.target.value });
   }
 
   //On 'upload' button clicked
   sendBtnClicked() {
-    //Create a FormData object with and popluate with file data=
     const formData = new FormData();
-    formData.append("uploadedFile", this.state.file, this.state.file.name);
+    if (this.state.checked) {
+      //Create a FormData object with and popluate with file data
+      formData.append("uploadedFile", this.state.file, this.state.file.name);
 
-    //Make post request to backend to store the uploaded file
-    fetch("/upload", {
-      method: "POST",
-      body: formData
-    })
-      .then((res) => res.json())
-      .then((jsonRes) => {
-        console.log(jsonRes.message);
-        return this.setState({ data: jsonRes.message })
+      //Make post request to backend to store the uploaded file
+      fetch("/upload", {
+        method: "POST",
+        body: formData
       })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then((res) => res.json())
+        .then((jsonRes) => {
+          console.log(jsonRes.message);
+          return this.setState({ data: jsonRes.message })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      //Send text
+      formData.append("userText",)
+      //An audio file should be sent back by this api call
+    }
+
+
+
 
     fetch("/getFiles").then((res) => {
       //Create a reader for the body of the response
@@ -215,7 +231,7 @@ class App extends React.Component {
     } else {
       userInput =
         <div>
-          <textarea></textarea>
+          <input type="text" onChange={this.textChanged}></input>
         </div>
     }
     return (
@@ -233,6 +249,8 @@ class App extends React.Component {
           </label>
 
           {userInput}
+
+          <p>Text is {this.state.userText}</p>
 
           <br />
           <button onClick={this.sendBtnClicked}>Send file</button>
