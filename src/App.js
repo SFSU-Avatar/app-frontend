@@ -30,7 +30,7 @@ class App extends React.Component {
       file: null,  //Uploaded file
       recievedFiles: [],  //File recieved from backend
       frameNum: 0,
-      audio: new Audio('tts.mp3')
+      audio: new Audio('sample.wav')
     }
     this.fileChanged = this.fileChanged.bind(this);
     this.sendBtnClicked = this.sendBtnClicked.bind(this);
@@ -59,7 +59,7 @@ class App extends React.Component {
 
   //On 'upload' button clicked
   sendBtnClicked() {
-    //Create a FormData object with and popluate with file data
+    //Create a FormData object with and popluate with file data=
     const formData = new FormData();
     formData.append("uploadedFile", this.state.file, this.state.file.name);
 
@@ -219,42 +219,42 @@ class App extends React.Component {
     // });
 
     /////////////////////////////////////////
+    let loader = new OBJLoader();
+    var obj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
 
-    // let texLoader = new TextureLoader();
-    // let myTex = texLoader.load("/texture_mesh.png");
+    obj.children[0].material = new THREE.MeshPhongMaterial({
 
-    // obj.children[0].material = new THREE.MeshNormalMaterial({
-    //   map: myMtl
-    // });
-    // console.log(obj.children[0].geometry);
-
-    // return (
-    //   <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
-    //   </mesh>
-    // );
-    var mtlLoader = new MTLLoader();
-    mtlLoader.load("/texture_mesh.mtl", (newMats) => {
-      // const obj = useLoader(OBJLoader, "/rock.obj");
-      let loader = new OBJLoader();
-      loader.setMaterials(newMats);
-      var obj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
-      // const texture = new Texture("/texture_mesh.mtl");
-      // let matLoader = new MaterialLoader();
-      // let myMat = matLoader.load("/texture_mesh.mtl");
-
-      // obj.children[0].material = new THREE.MeshPhongMaterial({
-      //   color: 'white'
-      // });
-      console.log(obj.children[0].material);
-      obj.children[0].material = new THREE.MeshPhongMaterial({
-        color: 'white'
-      });
-
-      return (
-        <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
-        </mesh>
-      );
     });
+
+    return (
+      <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
+      </mesh>
+    );
+
+
+    // var mtlLoader = new MTLLoader();
+    // mtlLoader.load("/texture_mesh.mtl", (newMats) => {
+    //   // const obj = useLoader(OBJLoader, "/rock.obj");
+    //   let loader = new OBJLoader();
+    //   loader.setMaterials(newMats);
+    //   var obj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
+    //   // const texture = new Texture("/texture_mesh.mtl");
+    //   // let matLoader = new MaterialLoader();
+    //   // let myMat = matLoader.load("/texture_mesh.mtl");
+
+    //   // obj.children[0].material = new THREE.MeshPhongMaterial({
+    //   //   color: 'white'
+    //   // });
+    //   console.log(obj.children[0].material);
+    //   obj.children[0].material = new THREE.MeshPhongMaterial({
+    //     color: 'white'
+    //   });
+
+    //   return (
+    //     <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
+    //     </mesh>
+    //   );
+    // });
 
     //MY IMPLEMENTATION
     // let loader = new OBJLoader();
@@ -281,7 +281,7 @@ class App extends React.Component {
           this.setState((prevState, props) => ({
             frameNum: prevState.frameNum + 1
           }));
-        }, 18);
+        }, 16.667);
       }
       )
   }
@@ -302,7 +302,6 @@ class App extends React.Component {
           <br />
           <button onClick={this.sendBtnClicked}>Send file</button>
           <br />
-          {/* <button onClick={this.getBtnClicked}>Get files</button> */}
           <p>{this.state.data}</p>
           <p>Number of files stored in state: {this.state.recievedFiles.length}</p>
         </header>
