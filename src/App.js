@@ -1,24 +1,23 @@
 // client/src/App.js
 
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
-import { useBox } from "@react-three/cannon";
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
-import { useLoader } from '@react-three/fiber'
-import { Mesh } from "three";
+// import { useBox } from "@react-three/cannon";
+// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+// import { useLoader } from '@react-three/fiber'
+// import { Mesh } from "three";
 
-import * as THREE from "three";
-import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
-import { DDSLoader } from "three-stdlib";
-import { Suspense } from "react";
-import { Texture } from "three";
-import { BufferGeometry } from "three";
-import { TextureLoader } from "three";
-import { MaterialLoader } from "three";
-import { Material } from "three";
+// import * as THREE from "three";
+// import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
+// import { DDSLoader } from "three-stdlib";
+// import { Suspense } from "react";
+// import { Texture } from "three";
+// import { BufferGeometry } from "three";
+// import { TextureLoader } from "three";
+// import { MaterialLoader } from "three";
+// import { Material } from "three";
 
 
 
@@ -32,9 +31,9 @@ class App extends React.Component {
       frameNum: 0,
       audio: new Audio('sample.wav')
     }
+
     this.fileChanged = this.fileChanged.bind(this);
     this.sendBtnClicked = this.sendBtnClicked.bind(this);
-    this.getBtnClicked = this.getBtnClicked.bind(this);
     this.switchFrameClick = this.switchFrameClick.bind(this);
     this.playVid = this.playVid.bind(this);
   }
@@ -124,55 +123,6 @@ class App extends React.Component {
     });
   }
 
-  getBtnClicked() {
-
-    fetch("/getFiles").then((res) => {
-      //Create a reader for the body of the response
-      const reader = res.body.getReader();
-      var currObj = "";
-
-      const read = () => {
-        // read the data
-        reader.read().then(({ done, value }) => {
-          //done is set to true when the connection is closed
-          if (done) {
-            console.log("END OF DATA STREAM -- CONNECTION CLOSED");
-            return;
-          }
-
-          //Decode the sent data
-          const decoder = new TextDecoder();
-          var dataChunk = decoder.decode(value);
-          // console.log("[received]:" + dataChunk);
-
-          //Add the data chunk to the current object
-          currObj += dataChunk;
-
-          //If the file delimeter is found in the current data chunk
-          if (dataChunk.indexOf("$") != -1) {
-            //Split up the data chunk into the complete object
-            //and the start of the new object
-            var parts = currObj.split("$");
-            let completeObj = parts[0];
-            currObj = parts[1];
-
-            // console.log("COMPLETE OBJ: " + completeObj);
-            var jsonObj = JSON.parse(completeObj);
-            console.log("NAME: " + jsonObj.name)
-
-            var newArray = this.state.recievedFiles;
-            newArray.push(jsonObj.arrayBuffer);
-            this.setState({ recievedFiles: newArray });
-          }
-
-          read();
-        });
-      };
-
-      read();
-    });
-  }
-
   display() {
     if (this.state.recievedFiles.length <= 0) {
       return <p>No File Recieved Yet</p>
@@ -196,70 +146,28 @@ class App extends React.Component {
   }
 
   Scene() {
-    //LOAD FROM A FILE NAME
+    //********** LOAD FROM A FILE NAME
     // const obj = useLoader(OBJLoader, "test.obj", (loader) => { 
     //   Material
     // });
 
-    // var mtlLoader = new MTLLoader();
-    // mtlLoader.load("/texture_mesh.mtl", (newMats) => {
-    //   const obj = useLoader(OBJLoader, "test.obj", (loader) => {
-
-    //   });
-
-    //   obj.children[0].material = new THREE.MeshNormalMaterial({
-    //     map: materials
-    //   });
-    //   console.log(obj.children[0].geometry);
-
-    //   return (
-    //     <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
-    //     </mesh>
-    //   );
-    // });
-
-    /////////////////////////////////////////
-    let loader = new OBJLoader();
-    var obj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
-
-    obj.children[0].material = new THREE.MeshPhongMaterial({
-
-    });
-
-    return (
-      <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
-      </mesh>
-    );
-
-
-    // var mtlLoader = new MTLLoader();
-    // mtlLoader.load("/texture_mesh.mtl", (newMats) => {
-    //   // const obj = useLoader(OBJLoader, "/rock.obj");
-    //   let loader = new OBJLoader();
-    //   loader.setMaterials(newMats);
-    //   var obj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
-    //   // const texture = new Texture("/texture_mesh.mtl");
-    //   // let matLoader = new MaterialLoader();
-    //   // let myMat = matLoader.load("/texture_mesh.mtl");
-
-    //   // obj.children[0].material = new THREE.MeshPhongMaterial({
-    //   //   color: 'white'
-    //   // });
-    //   console.log(obj.children[0].material);
-    //   obj.children[0].material = new THREE.MeshPhongMaterial({
-    //     color: 'white'
-    //   });
-
-    //   return (
-    //     <mesh geometry={obj.children[0].geometry} material={obj.children[0].material} scale={20}>
-    //     </mesh>
-    //   );
-    // });
-
-    //MY IMPLEMENTATION
+    //********** USING PRIMITIVES
     // let loader = new OBJLoader();
     // var myObj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
     // return <primitive object={myObj} scale={20} />;
+
+    //********** USING MESHES
+    let loader = new OBJLoader();
+    var obj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
+
+    //Set material
+    // obj.children[0].material = new THREE.MeshPhongMaterial({});
+
+    return (
+      <mesh geometry={obj.children[0].geometry} /*material={obj.children[0].material}*/ scale={20}>
+      </mesh>
+    );
+
   };
 
   switchFrameClick() {
