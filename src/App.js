@@ -6,6 +6,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 // import { useBox } from "@react-three/cannon";
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import Switch from "react-switch";
 // import { useLoader } from '@react-three/fiber'
 // import { Mesh } from "three";
 
@@ -29,13 +30,15 @@ class App extends React.Component {
       file: null,  //Uploaded file
       recievedFiles: [],  //File recieved from backend
       frameNum: 0,
-      audio: new Audio('sample.wav')
+      audio: new Audio('sample.wav'),
+      checked: false
     }
 
     this.fileChanged = this.fileChanged.bind(this);
     this.sendBtnClicked = this.sendBtnClicked.bind(this);
     this.switchFrameClick = this.switchFrameClick.bind(this);
     this.playVid = this.playVid.bind(this);
+    this.switchFlipped = this.switchFlipped.bind(this);
   }
 
   //Display message confirming connection to backend
@@ -49,6 +52,11 @@ class App extends React.Component {
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  //Switch was flipped
+  switchFlipped(checked) {
+    this.setState({ checked });
   }
 
   //On new upload file is selected
@@ -195,6 +203,21 @@ class App extends React.Component {
   }
 
   render() {
+    var userInput;
+    if (this.state.checked) {
+      userInput =
+        <div>
+          <label htmlFor="uploadedFile">Choose an audio file to upload</label>
+          <br />
+          <input type="file" name="uploadedFile" onChange={this.fileChanged}></input>
+          <br />
+        </div>
+    } else {
+      userInput =
+        <div>
+          <textarea></textarea>
+        </div>
+    }
     return (
       <div className="App" >
 
@@ -204,9 +227,13 @@ class App extends React.Component {
         <button onClick={this.switchFrameClick}>Switch Frame</button>
         <button onClick={this.playVid}>Play!</button>
         <header className="App-header">
-          <label htmlFor="uploadedFile">Choose an audio file to upload</label>
-          <br />
-          <input type="file" name="uploadedFile" onChange={this.fileChanged}></input>
+          <label>
+            <span style={{ marginRight: '5px' }}>Use custom audio</span>
+            <Switch onChange={this.switchFlipped} checked={this.state.checked} />
+          </label>
+
+          {userInput}
+
           <br />
           <button onClick={this.sendBtnClicked}>Send file</button>
           <br />
