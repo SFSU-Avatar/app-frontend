@@ -84,6 +84,7 @@ class App extends React.Component {
       })
         .then((res) => res.json())
         .then((jsonRes) => {
+          this.callVOCA();
           console.log(jsonRes.message);
           return this.setState({ data: jsonRes.message })
         })
@@ -98,57 +99,59 @@ class App extends React.Component {
         body: formData
       }).then(res => res.blob())
         .then(resFile => {
+          this.callVOCA();
           console.log(resFile);
+          this.setState({ userAudio: resFile });
         });
-
-      //An audio file should be sent back by this api call
     }
+  }
 
-    // fetch("/getFiles").then((res) => {
-    //   //Create a reader for the body of the response
-    //   const reader = res.body.getReader();
-    //   var currObj = "";
+  callVOCA() {
+    fetch("/getFiles").then((res) => {
+      //Create a reader for the body of the response
+      const reader = res.body.getReader();
+      var currObj = "";
 
-    //   const read = () => {
-    //     // read the data
-    //     reader.read().then(({ done, value }) => {
-    //       //done is set to true when the connection is closed
-    //       if (done) {
-    //         console.log("END OF DATA STREAM -- CONNECTION CLOSED");
-    //         return;
-    //       }
+      const read = () => {
+        // read the data
+        reader.read().then(({ done, value }) => {
+          //done is set to true when the connection is closed
+          if (done) {
+            console.log("END OF DATA STREAM -- CONNECTION CLOSED");
+            return;
+          }
 
-    //       //Decode the sent data
-    //       const decoder = new TextDecoder();
-    //       var dataChunk = decoder.decode(value);
-    //       // console.log("[received]:" + dataChunk);
+          //Decode the sent data
+          const decoder = new TextDecoder();
+          var dataChunk = decoder.decode(value);
+          // console.log("[received]:" + dataChunk);
 
-    //       //Add the data chunk to the current object
-    //       currObj += dataChunk;
+          //Add the data chunk to the current object
+          currObj += dataChunk;
 
-    //       //If the file delimeter is found in the current data chunk
-    //       if (dataChunk.indexOf("$") != -1) {
-    //         //Split up the data chunk into the complete object
-    //         //and the start of the new object
-    //         var parts = currObj.split("$");
-    //         let completeObj = parts[0];
-    //         currObj = parts[1];
+          //If the file delimeter is found in the current data chunk
+          if (dataChunk.indexOf("$") != -1) {
+            //Split up the data chunk into the complete object
+            //and the start of the new object
+            var parts = currObj.split("$");
+            let completeObj = parts[0];
+            currObj = parts[1];
 
-    //         // console.log("COMPLETE OBJ: " + completeObj);
-    //         var jsonObj = JSON.parse(completeObj);
-    //         console.log("NAME: " + jsonObj.name)
+            // console.log("COMPLETE OBJ: " + completeObj);
+            var jsonObj = JSON.parse(completeObj);
+            console.log("NAME: " + jsonObj.name)
 
-    //         var newArray = this.state.recievedFiles;
-    //         newArray.push(jsonObj.arrayBuffer);
-    //         this.setState({ recievedFiles: newArray });
-    //       }
+            var newArray = this.state.recievedFiles;
+            newArray.push(jsonObj.arrayBuffer);
+            this.setState({ recievedFiles: newArray });
+          }
 
-    //       read();
-    //     });
-    //   };
+          read();
+        });
+      };
 
-    //   read();
-    // });
+      read();
+    });
   }
 
   display() {
