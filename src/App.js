@@ -85,6 +85,7 @@ class App extends React.Component {
         .then((res) => res.json())
         .then((jsonRes) => {
           console.log(jsonRes.message);
+          this.callVOCA()
           return this.setState({ data: jsonRes.message })
         })
         .catch((err) => {
@@ -99,12 +100,11 @@ class App extends React.Component {
       }).then(res => res.blob())
         .then(resFile => {
           console.log(resFile);
+          this.callVOCA();
           this.setState({ userAudio: resFile });
         });
     }
 
-
-    this.callVOCA();
   }
 
   callVOCA() {
@@ -112,7 +112,7 @@ class App extends React.Component {
       //Create a reader for the body of the response
       const reader = res.body.getReader();
       var currObj = "";
-      this.sendBtnClicked({ recievedFiles: [] });
+      this.setState({ recievedFiles: [] });
 
       const read = () => {
         // read the data
