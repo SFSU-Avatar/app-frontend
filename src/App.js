@@ -27,10 +27,9 @@ class App extends React.Component {
     super();
     this.state = {
       data: "",  //Message confirming conenction to backend
-      file: null,  //Uploaded file
       recievedFiles: [],  //File recieved from backend
       frameNum: 0,
-      audio: new Audio('sample.wav'),
+      userAudio: null,
       checked: false,
       userText: ""
     }
@@ -63,7 +62,7 @@ class App extends React.Component {
 
   //On new upload file is selected
   fileChanged(event) {
-    this.setState({ file: event.target.files[0] });
+    this.setState({ userAudio: event.target.files[0] });
   }
 
   //On text field content changed
@@ -76,10 +75,10 @@ class App extends React.Component {
     const formData = new FormData();
     if (this.state.checked) {
       //Create a FormData object with and popluate with file data
-      formData.append("uploadedFile", this.state.file, this.state.file.name);
+      formData.append("uploadedFile", this.state.userAudio, this.state.userAudio.name);
 
       //Make post request to backend to store the uploaded file
-      fetch("/upload", {
+      fetch("/uploadFile", {
         method: "POST",
         body: formData
       })
@@ -93,58 +92,63 @@ class App extends React.Component {
         });
     } else {
       //Send text
-      formData.append("userText",)
+      formData.append("userText", this.state.userText);
+      fetch("/uploadText", {
+        method: "POST",
+        body: formData
+      }).then(res => res.blob())
+        .then(resFile => {
+          console.log(resFile);
+        });
+
       //An audio file should be sent back by this api call
     }
 
+    // fetch("/getFiles").then((res) => {
+    //   //Create a reader for the body of the response
+    //   const reader = res.body.getReader();
+    //   var currObj = "";
 
+    //   const read = () => {
+    //     // read the data
+    //     reader.read().then(({ done, value }) => {
+    //       //done is set to true when the connection is closed
+    //       if (done) {
+    //         console.log("END OF DATA STREAM -- CONNECTION CLOSED");
+    //         return;
+    //       }
 
+    //       //Decode the sent data
+    //       const decoder = new TextDecoder();
+    //       var dataChunk = decoder.decode(value);
+    //       // console.log("[received]:" + dataChunk);
 
-    fetch("/getFiles").then((res) => {
-      //Create a reader for the body of the response
-      const reader = res.body.getReader();
-      var currObj = "";
+    //       //Add the data chunk to the current object
+    //       currObj += dataChunk;
 
-      const read = () => {
-        // read the data
-        reader.read().then(({ done, value }) => {
-          //done is set to true when the connection is closed
-          if (done) {
-            console.log("END OF DATA STREAM -- CONNECTION CLOSED");
-            return;
-          }
+    //       //If the file delimeter is found in the current data chunk
+    //       if (dataChunk.indexOf("$") != -1) {
+    //         //Split up the data chunk into the complete object
+    //         //and the start of the new object
+    //         var parts = currObj.split("$");
+    //         let completeObj = parts[0];
+    //         currObj = parts[1];
 
-          //Decode the sent data
-          const decoder = new TextDecoder();
-          var dataChunk = decoder.decode(value);
-          // console.log("[received]:" + dataChunk);
+    //         // console.log("COMPLETE OBJ: " + completeObj);
+    //         var jsonObj = JSON.parse(completeObj);
+    //         console.log("NAME: " + jsonObj.name)
 
-          //Add the data chunk to the current object
-          currObj += dataChunk;
+    //         var newArray = this.state.recievedFiles;
+    //         newArray.push(jsonObj.arrayBuffer);
+    //         this.setState({ recievedFiles: newArray });
+    //       }
 
-          //If the file delimeter is found in the current data chunk
-          if (dataChunk.indexOf("$") != -1) {
-            //Split up the data chunk into the complete object
-            //and the start of the new object
-            var parts = currObj.split("$");
-            let completeObj = parts[0];
-            currObj = parts[1];
+    //       read();
+    //     });
+    //   };
 
-            // console.log("COMPLETE OBJ: " + completeObj);
-            var jsonObj = JSON.parse(completeObj);
-            console.log("NAME: " + jsonObj.name)
-
-            var newArray = this.state.recievedFiles;
-            newArray.push(jsonObj.arrayBuffer);
-            this.setState({ recievedFiles: newArray });
-          }
-
-          read();
-        });
-      };
-
-      read();
-    });
+    //   read();
+    // });
   }
 
   display() {
@@ -203,7 +207,10 @@ class App extends React.Component {
 
   playVid() {
     this.setState({ frameNum: 0 });
-    this.state.audio.play()
+
+    const audioURL = URL.createObjectURL(this.state.userAudio);
+    const userAudio = new Audio(audioURL);
+    userAudio.play()
       .then(() => {
         var intervalID = window.setInterval(() => {
           if (this.state.frameNum == this.state.recievedFiles.length - 1) {
