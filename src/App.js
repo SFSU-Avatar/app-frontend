@@ -219,9 +219,10 @@ class App extends React.Component {
       .then(() => {
         var intervalID = window.setInterval(() => {
           if (this.state.frameNum == this.state.recievedFiles.length - 1) {
-            this.setState({ frameNum: 0 });
+            this.setState({ frameNum: -1 });
             clearInterval(intervalID);
           }
+
           this.setState((prevState, props) => ({
             frameNum: prevState.frameNum + 1
           }));
