@@ -108,7 +108,12 @@ class App extends React.Component {
   }
 
   callVOCA() {
-    fetch("/getFiles").then((res) => {
+    const controller = new AbortController()
+
+    // 10 min timeout:
+    const timeoutId = setTimeout(() => controller.abort(), 600000)
+
+    fetch("/getFiles", { signal: controller.signal }).then((res) => {
       //Create a reader for the body of the response
       const reader = res.body.getReader();
       var currObj = "";
