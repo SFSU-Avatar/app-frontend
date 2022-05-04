@@ -31,7 +31,9 @@ class App extends React.Component {
       frameNum: 0,
       userAudio: null,
       checked: false,
-      userText: ""
+      userText: "",
+      start: 0,
+      nextAt: 0
     }
 
     this.fileChanged = this.fileChanged.bind(this);
@@ -111,7 +113,7 @@ class App extends React.Component {
     const controller = new AbortController()
 
     // 10 min timeout:
-    const timeoutId = setTimeout(() => controller.abort(), 600000)
+    const timeoutId = setTimeout(() => controller.abort(), 3600000)
 
     fetch("/getFiles", { signal: controller.signal }).then((res) => {
       //Create a reader for the body of the response
@@ -138,19 +140,34 @@ class App extends React.Component {
 
           //If the file delimeter is found in the current data chunk
           if (dataChunk.indexOf("$") != -1) {
+            //   if (currObj.replace(/[^a]/g, "").length > 1) {
+            //     console.log("Bad File Found");
+            //     var multObjs = currObj.split(/(?<=\})/);
+            //     multObjs.forEach(obj => {
+            //       console.log("PART OF BAD OBJECT: " + obj);
+            //       var jsonObj = JSON.parse(obj);
+            //       var newArray = this.state.recievedFiles;
+            //       newArray.push(jsonObj.arrayBuffer);
+            //       this.setState({ recievedFiles: newArray });
+            //     });
+            //   } else {
             //Split up the data chunk into the complete object
             //and the start of the new object
             var parts = currObj.split("$");
             let completeObj = parts[0];
             currObj = parts[1];
-
-            // console.log("COMPLETE OBJ: " + completeObj);
+            console.log("CURR OBJ: " + currObj)
+            console.log("COMPLETE OBJ: " + completeObj);
+            // console.log("BEORE PARSE: ");
+            // console.log(completeObj);
             var jsonObj = JSON.parse(completeObj);
             console.log("NAME: " + jsonObj.name)
 
             var newArray = this.state.recievedFiles;
             newArray.push(jsonObj.arrayBuffer);
             this.setState({ recievedFiles: newArray });
+            //}
+
           }
 
           read();
@@ -216,6 +233,18 @@ class App extends React.Component {
   }
 
   playVid() {
+
+    // this.setState({ frameNum: 0 });
+
+    // const audioURL = URL.createObjectURL(this.state.userAudio);
+    // const userAudio = new Audio(audioURL);
+    // userAudio.play()
+    //   .then(() => {
+    //     this.startAnim();
+    //   })
+
+
+
     this.setState({ frameNum: 0 });
 
     const audioURL = URL.createObjectURL(this.state.userAudio);
@@ -235,6 +264,34 @@ class App extends React.Component {
       }
       )
   }
+
+
+
+  // startAnim() {
+  //   console.log("HERE");
+  //   if (!(this.state.start)) {
+  //     var thing = new Date().getTime();
+  //     console.log(thing);
+  //     this.setState((prevState, props) => ({
+  //       start: new Date().getTime(),
+  //       nextAt: prevState.start
+  //     }));
+  //   }
+
+  //   this.setState((prevState, props) => ({
+  //     nextAt: prevState.nextAt + 16.667
+  //   }));
+
+  //   if (this.state.frameNum == this.state.recievedFiles.length - 1) {
+  //     this.setState({ frameNum: -1 });
+  //   }
+
+  //   this.setState((prevState, props) => ({
+  //     frameNum: prevState.frameNum + 1
+  //   }));
+
+  //   setTimeout(this.startAnim, this.state.nextAt - new Date().getTime());
+  // };
 
   render() {
     var userInput;
@@ -275,6 +332,7 @@ class App extends React.Component {
           <br />
           <p>{this.state.data}</p>
           <p>Number of files stored in state: {this.state.recievedFiles.length}</p>
+          <p>{this.state.start}</p>
         </header>
       </div>
     );
