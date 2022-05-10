@@ -31,7 +31,7 @@ class App extends React.Component {
       frameNum: 0,
       userAudio: null,
       checked: false,
-      userText: "",
+      userText: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
       start: 0,
       nextAt: 0
     }
@@ -156,8 +156,8 @@ class App extends React.Component {
             var parts = currObj.split("$");
             let completeObj = parts[0];
             currObj = parts[1];
-            console.log("CURR OBJ: " + currObj)
-            console.log("COMPLETE OBJ: " + completeObj);
+            // console.log("CURR OBJ: " + currObj)
+            // console.log("COMPLETE OBJ: " + completeObj);
             // console.log("BEORE PARSE: ");
             // console.log(completeObj);
             var jsonObj = JSON.parse(completeObj);
@@ -232,66 +232,54 @@ class App extends React.Component {
 
   }
 
+  doWork() {
+    console.log("IN DO WORK");
+
+    var internalCallback = () => {
+      console.log("IN CALLBACK");
+      var start = performance.now();
+      this.setState((prevState, props) => ({
+        frameNum: prevState.frameNum + 1
+      }));
+
+      if (this.state.frameNum < this.state.recievedFiles.length - 2) {
+        var duration = (performance.now() - start)
+        setTimeout(internalCallback, 16.667 - duration)
+      } else {
+        console.log("NO LONGER MEET REQS")
+      }
+
+    }
+
+    setTimeout(internalCallback, 16.667)
+  }
+
   playVid() {
-
-    // this.setState({ frameNum: 0 });
-
-    // const audioURL = URL.createObjectURL(this.state.userAudio);
-    // const userAudio = new Audio(audioURL);
-    // userAudio.play()
-    //   .then(() => {
-    //     this.startAnim();
-    //   })
-
-
-
     this.setState({ frameNum: 0 });
 
     const audioURL = URL.createObjectURL(this.state.userAudio);
     const userAudio = new Audio(audioURL);
     userAudio.play()
       .then(() => {
-        var intervalID = window.setInterval(() => {
-          if (this.state.frameNum == this.state.recievedFiles.length - 1) {
-            this.setState({ frameNum: -1 });
-            clearInterval(intervalID);
-          }
+        this.doWork()
+      })
 
-          this.setState((prevState, props) => ({
-            frameNum: prevState.frameNum + 1
-          }));
-        }, 16.667);
-      }
-      )
+
+
+
+    // .then(() => {
+    //   var intervalID = window.setInterval(() => {
+    //     if (this.state.frameNum == this.state.recievedFiles.length - 1) {
+    //       this.setState({ frameNum: -1 });
+    //       clearInterval(intervalID);
+    //     }
+
+    //     this.setState((prevState, props) => ({
+    //       frameNum: prevState.frameNum + 1
+    //     }));
+    //   }, 16.667);
+    // })
   }
-
-
-
-  // startAnim() {
-  //   console.log("HERE");
-  //   if (!(this.state.start)) {
-  //     var thing = new Date().getTime();
-  //     console.log(thing);
-  //     this.setState((prevState, props) => ({
-  //       start: new Date().getTime(),
-  //       nextAt: prevState.start
-  //     }));
-  //   }
-
-  //   this.setState((prevState, props) => ({
-  //     nextAt: prevState.nextAt + 16.667
-  //   }));
-
-  //   if (this.state.frameNum == this.state.recievedFiles.length - 1) {
-  //     this.setState({ frameNum: -1 });
-  //   }
-
-  //   this.setState((prevState, props) => ({
-  //     frameNum: prevState.frameNum + 1
-  //   }));
-
-  //   setTimeout(this.startAnim, this.state.nextAt - new Date().getTime());
-  // };
 
   render() {
     var userInput;
@@ -306,7 +294,7 @@ class App extends React.Component {
     } else {
       userInput =
         <div>
-          <input type="text" onChange={this.textChanged}></input>
+          <input type="text" value={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} onChange={this.textChanged}></input>
         </div>
     }
     return (
