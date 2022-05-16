@@ -31,7 +31,7 @@ class App extends React.Component {
       frameNum: 0,
       userAudio: null,
       checked: false,
-      userText: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+      userText: "A thesis is the main idea of an academic paper that expresses the writer’s position on a topic. In other words, if you are writing about the death penalty, you would state your viewpoint upfront and introduce the arguments you will be presenting in defense of your stance. Having a clear, unmistakable thesis shows strength and confidence in your beliefs. The thesis is typically located at the end of the introductory paragraph of the thesis paper.All research papers need a thesis to grab the reader’s attention and signal where the paper is heading.Length can vary from a one- page English composition essay to a Ph.D.dissertation that is hundreds of pages long. Everything included in the paper should directly and succinctly relate to the thesis.",
       start: 0,
       nextAt: 0
     }
@@ -241,7 +241,7 @@ class App extends React.Component {
 
       if (this.state.frameNum < this.state.recievedFiles.length - 2) {
         var duration = (performance.now() - start)
-        setTimeout(internalCallback, 16.64 - duration)
+        setTimeout(internalCallback, 16.65 - duration - (this.state.frameNum / 1000000))
       } else {
         console.log("NO LONGER MEET REQS")
         this.setState({ frameNum: 0 });
@@ -292,7 +292,7 @@ class App extends React.Component {
     } else {
       userInput =
         <div>
-          <input type="text" value={"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."} onChange={this.textChanged}></input>
+          <input type="text" value={"A thesis is the main idea of an academic paper that expresses the writer’s position on a topic. In other words, if you are writing about the death penalty, you would state your viewpoint upfront and introduce the arguments you will be presenting in defense of your stance. Having a clear, unmistakable thesis shows strength and confidence in your beliefs. The thesis is typically located at the end of the introductory paragraph of the thesis paper.All research papers need a thesis to grab the reader’s attention and signal where the paper is heading.Length can vary from a one- page English composition essay to a Ph.D.dissertation that is hundreds of pages long. Everything included in the paper should directly and succinctly relate to the thesis."} onChange={this.textChanged}></input>
         </div>
     }
     return (
