@@ -42,6 +42,8 @@ class App extends React.Component {
     this.switchFrameClick = this.switchFrameClick.bind(this);
     this.playVid = this.playVid.bind(this);
     this.switchFlipped = this.switchFlipped.bind(this);
+
+    var renderTime = 0
   }
 
   //Display message confirming connection to backend
@@ -207,8 +209,10 @@ class App extends React.Component {
     // });
 
     //********** USING PRIMITIVES
+    var startTime = performance.now()
     let loader = new OBJLoader();
     var myObj = loader.parse(this.state.recievedFiles[this.state.frameNum]);
+    this.renderTime = performance.now() - startTime;
     return <primitive object={myObj} scale={20} />;
 
     //********** USING MESHES
@@ -240,10 +244,9 @@ class App extends React.Component {
       }));
 
       if (this.state.frameNum < this.state.recievedFiles.length - 2) {
-        var duration = (performance.now() - start)
-        setTimeout(internalCallback, 16.65 - duration - (this.state.frameNum / 1000000))
+        var duration = (performance.now() - start);
+        setTimeout(internalCallback, 16.65 - duration - (this.renderTime / 1000))
       } else {
-        console.log("NO LONGER MEET REQS")
         this.setState({ frameNum: 0 });
       }
 
@@ -261,22 +264,6 @@ class App extends React.Component {
       .then(() => {
         this.doWork()
       })
-
-
-
-
-    // .then(() => {
-    //   var intervalID = window.setInterval(() => {
-    //     if (this.state.frameNum == this.state.recievedFiles.length - 1) {
-    //       this.setState({ frameNum: -1 });
-    //       clearInterval(intervalID);
-    //     }
-
-    //     this.setState((prevState, props) => ({
-    //       frameNum: prevState.frameNum + 1
-    //     }));
-    //   }, 16.667);
-    // })
   }
 
   render() {
